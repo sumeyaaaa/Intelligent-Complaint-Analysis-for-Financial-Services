@@ -1,22 +1,21 @@
 import sys
 import os
+import pandas as pd
+import numpy as np
+from tqdm import tqdm
+from pathlib import Path
 
-# Add the src directory to the Python path
-current_path = os.path.dirname(os.path.abspath(__file__))
-src_path = os.path.join(current_path, "..", "src")
-src_path = os.path.abspath(src_path)
-
-if src_path not in sys.path:
-    sys.path.append(src_path)
+# --- Add `src` to path ---
+current_path = Path(__file__).resolve().parent
+src_path = current_path.parent / "src"
+sys.path.append(str(src_path))
 
 print("✅ src path added:", src_path)
 
+# --- Import project modules ---
 from embedding import EmbeddingModel
 from chunking import chunk_with_langchain
 from indexing import FaissIndexer
-import pandas as pd
-from tqdm import tqdm
-import os
 
 # --- Config ---
 CSV_PATH = r"C:\Users\ABC\Desktop\10Acadamy\week_6\Intelligent-Complaint-Analysis-for-Financial-Services\data\clean\complaints_clean.csv"
@@ -27,7 +26,7 @@ CHUNK_OVERLAP = 50
 CHUNKSIZE = 1000
 
 # --- Setup ---
-os.makedirs(os.path.dirname(INDEX_PATH), exist_ok=True)
+os.makedirs(Path(INDEX_PATH).parent, exist_ok=True)
 embedder = EmbeddingModel()
 indexer = FaissIndexer(dim=embedder.get_dimension())
 all_metadata = []
@@ -58,9 +57,10 @@ for df in tqdm(reader, desc="Processing complaints"):
 
     if chunk_texts:
         embeddings = embedder.encode(chunk_texts)
+        embeddings = np.array(embeddings).astype("float32")  # 🔧 Required for FAISS
         indexer.add(embeddings, chunk_meta)
         all_metadata.extend(chunk_meta)
 
-# Save index and metadata after all batches
+# --- Final save ---
 indexer.save(INDEX_PATH, META_PATH)
 print("✅ Finished embedding and indexing the full dataset.")
