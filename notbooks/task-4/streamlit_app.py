@@ -1,7 +1,35 @@
 #streamlit run streamlit_app.py
-# task-4/streamlit_app.py
+# task-4/streamlit_app.
+"""
+### CFPB Complaint-Analysis Chatbot
+*This RAG assistant lets CrediTrust teams explore real customer-complaint
+narratives (CFPB public data) across five products.*
 
-import streamlit as st
+**EDA highlights**
+
+| Metric | Value |
+|--------|-------|
+| Complaints (raw file) | 10 000 000 |
+| With consumer narrative | 59 % |
+| Median words / narrative | 90 |
+| 95-percentile | 430 |
+| Max | 6 700 |
+
+**Evaluation snapshot**  
+
+| Question | Score (1-5) |
+|----------|-------------|
+| BNPL pain-points | 3 |
+| Credit-card dispute issues | 4 |
+| Savings-account complaints | 2 |
+| Money-transfer problems | 3 |
+
+*(Docs and code modules live in **rag_finance/src/**.  \
+Chunk = 100 words, overlap = 20; embeddings = MiniLM-L6-v2; index = FAISS Flat.*)
+"""
+
+
+import app.streamlit as st
 import pandas as pd
 import os
 import sys
