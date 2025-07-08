@@ -17,7 +17,11 @@ class RAGPipeline:
         self.metadata = pd.read_csv(metadata_path)
 
         # Load embedder and normalize helper
-        self.embedder = SentenceTransformer(embedding_model)
+        try:
+          self.embedder = SentenceTransformer(embedding_model, device='cpu')
+        except Exception as e:
+          print("❌ Failed to load embedding model:", e)
+
         self.dim = 384
         self.top_k = top_k
 

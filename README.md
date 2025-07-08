@@ -41,6 +41,7 @@ INTELLIGENT-COMPLAINT-ANALYSIS/
 │       └── (UI development notebook)
 │
 ├── src/
+    ├── __init__.py
 │   ├── eda.py
 │   ├── filter_clean.py
 │   ├── chunking.py
@@ -82,6 +83,29 @@ INTELLIGENT-COMPLAINT-ANALYSIS/
 - Prompt tuned for contextual, non-hallucinated insights.
 
 ---
+### 5. 🧠 Evaluation
+- Manually scored answers for ~10 representative questions using:
+
+  - Retrieved chunks
+
+  - Generated answer
+
+  - Score (1-5)
+
+---
+### 6. UI: Streamlit App
+- Clean chat-style interface
+
+- Displays LLM response + supporting chunks
+
+- Clear button resets session
+
+---
+## Launch the App
+```bash
+cd streamlit_app
+streamlit run app.py
+```
 
 ## 🧪 How to Run
 
@@ -111,6 +135,60 @@ INTELLIGENT-COMPLAINT-ANALYSIS/
 > 💬 “Many users complain about unexpected fees, poor transparency, and inability to manage installment schedules. The most common theme is dissatisfaction with the repayment process and unclear terms.”
 
 ---
+## 💡 Prompt Template Used
+
+```
+You are a financial analyst assistant for CrediTrust.
+Use the following retrieved complaint excerpts to answer the user's question.
+
+Context:
+{context}
+
+Question:
+{question}
+
+Answer:
+```
+
+---
+
+## 📊 Evaluation Example
+
+| Question                             | Answer Summary                  | Retrieved Chunks | Score | Comments                      |
+|-------------------------------------|----------------------------------|------------------|-------|-------------------------------|
+| Why are users unhappy with BNPL?    | Mostly about hidden fees         | Chunk #12, #33   | 4/5   | Missed late repayment detail  |
+| What issues do credit card users face? | Billing disputes, fraud reports | Chunk #4, #19    | 5/5   | Fully captures pain points    |
+
+---
+
+## 📸 Streamlit App Features
+
+-  Chat interface for natural-language queries
+- LLM-generated answers with source chunks displayed
+-  Clear button to reset interaction
+- (Optional) Token streaming for better UX
+
+---
+
+## 🔮 Future Improvements
+
+- [ ] Filter answers by financial product
+- [ ] Add feedback loop for user ratings
+- [ ] Support larger LLMs (e.g., LLaMA3 or Mixtral)
+- [ ] Deploy on Hugging Face Spaces or Docker
+
+---
+
+## 📚 References
+
+- [LangChain Docs](https://docs.langchain.com/)
+- [ChromaDB](https://docs.trychroma.com/getting-started)
+- [FAISS GitHub](https://github.com/facebookresearch/faiss/wiki/Getting-started)
+- [Streamlit Chat API](https://docs.streamlit.io/library/api-reference/chat)
+- [Gradio Docs](https://www.gradio.app/docs)
+- [HuggingFace RAG Guide](https://huggingface.co/blog/rag)
+
+---
 
 ## 📌 Tech Stack
 
@@ -125,10 +203,10 @@ INTELLIGENT-COMPLAINT-ANALYSIS/
 
 ## 📈 Project Status
 
-- ✅ Task 1: Data cleaning, EDA complete
-- ✅ Task 2: Chunking, embedding, FAISS indexing done
-- ✅ Task 3: RAG pipeline and qualitative evaluation
-- ⏳ Task 4: Interactive UI (in progress)
+- Task 1: Data cleaning, EDA complete
+- Task 2: Chunking, embedding, FAISS indexing done
+- Task 3: RAG pipeline and qualitative evaluation
+- Task 4: Interactive UI using streamlit
 
 ---
 
