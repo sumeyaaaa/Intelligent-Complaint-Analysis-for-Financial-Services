@@ -29,17 +29,28 @@ Chunk = 100 words, overlap = 20; embeddings = MiniLM-L6-v2; index = FAISS Flat.*
 """
 
 
-import app.streamlit as st
+import streamlit as st
 import pandas as pd
 import os
 import sys
 
-# --- Add src directory to path ---
-project_root = os.path.abspath(os.path.join(os.getcwd(), "../.."))
+import streamlit as st
+import pandas as pd
+import os
+import sys
+
+# Get the absolute path of the current script
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Go two levels up to reach project root
+project_root = os.path.abspath(os.path.join(current_dir, "../.."))
+
+# Add 'src' directory to path
 src_path = os.path.join(project_root, "src")
 if src_path not in sys.path:
     sys.path.append(src_path)
 
+# Now import your pipeline
 from rag_pipeline import RAGPipeline
 
 # --- Streamlit Setup ---

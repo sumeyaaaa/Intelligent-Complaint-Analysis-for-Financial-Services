@@ -1,0 +1,19 @@
+# config.yaml
+data:
+  csv_path: "data/clean/complaints_clean.csv"
+
+processing:
+  sample_size: null
+  chunk_size: 300
+  chunk_overlap: 20
+  batch_size: 1000
+
+embedding:
+  # You are correctly using the 'base' model
+  model_name: "BAAI/bge-base-en-v1.5"
+
+output:
+  # CORRECTED: Filename now correctly says "bge_base"
+  index_path: "data/vector_store/index_bge_base_300_20.faiss"
+  # CORRECTED: Filename now correctly says "bge_base"
+  meta_path: "data/vector_store/meta_bge_base_300_20.csv"
