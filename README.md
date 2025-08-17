@@ -1,215 +1,144 @@
 
-# 🧠 Intelligent Complaint Analysis for Financial Services
 
-This project implements a **Retrieval-Augmented Generation (RAG)** chatbot that helps internal teams at **CrediTrust Financial** understand customer complaints across five key product lines: Credit Cards, Personal Loans, Buy Now Pay Later (BNPL), Savings Accounts, and Money Transfers. It leverages complaint narratives from the Consumer Financial Protection Bureau (CFPB) to enable natural language querying of real-world customer feedback.
+# 🧠 Intelligent Complaint Analysis Assistant
 
----
+This project implements an advanced **Retrieval-Augmented Generation (RAG)** system designed to help internal teams at **CrediTrust Financial** analyze and understand customer complaints. The application features a multi-page Streamlit dashboard that allows for interactive data analysis and conversational Q\&A with an AI assistant grounded in real-world customer feedback from the Consumer Financial Protection Bureau (CFPB).
 
-## 🚀 Project Objective
 
-To transform thousands of raw, unstructured complaint narratives into a searchable and interactive AI assistant that empowers product, compliance, and support teams to:
+-----
 
-- Identify major complaint trends in minutes instead of days.
-- Answer product-specific questions without needing SQL or data analysts.
-- Proactively address customer issues with contextual and evidence-backed insights.
+## 🎯 Project Objective
 
----
+To transform thousands of raw, unstructured complaint narratives into a strategic asset. The goal is to build an interactive AI assistant that empowers product, compliance, and support teams to:
 
-## 🧱 Project Structure
+  - Identify major complaint trends in minutes instead of days.
+  - Answer product-specific questions with evidence-backed insights, without needing data analysts.
+  - Proactively discover and address customer pain points before they escalate.
+
+-----
+
+## 🏛️ System Architecture
+
+The project is built on a robust, modular architecture designed for performance and accuracy.
+
+1.  **Data Processing Pipeline**: A memory-efficient pipeline processes the full dataset of over 400,000 complaints. It filters for relevant products, cleans the narratives, and uses a data-driven chunking strategy (`chunk_size=300`, `overlap=20`) to create focused, semantically meaningful text units.
+2.  **Advanced RAG Core**: The "brain" of the system is a sophisticated `RAGPipeline` class that orchestrates several models:
+      * **Embedding Model**: Uses `BAAI/bge-base-en-v1.5` to convert text chunks into high-quality vector embeddings.
+      * **Vector Store**: A **FAISS** index stores approximately 1.9 million vectors for high-speed retrieval.
+      * **Re-ranker Model**: A `CrossEncoder` model (`cross-encoder/ms-marco-MiniLM-L-6-v2`) performs a crucial second-pass scoring of retrieved documents to ensure the highest possible relevance.
+      * **Sentiment Model**: A `distilbert-base-uncased` model provides real-time sentiment analysis of the retrieved sources.
+      * **Generative LLM**: `google/flan-t5-base` is used to synthesize the final, context-aware answer.
+3.  **Comprehensive Evaluation Suite**: The pipeline's performance is measured using a rigorous, two-pronged approach:
+      * **Manual Qualitative Scoring**: A human-in-the-loop process for scoring answer quality and relevance on a 1-5 scale.
+      * **Automated Quantitative Metrics**: The **RAGAs** framework provides objective scores for metrics like `faithfulness`, `answer_relevancy`, and `context_precision`.
+4.  **Multi-Page Streamlit UI**: A user-friendly web application provides several key functionalities:
+      * **Homepage**: An overview of the project and key EDA metrics.
+      * **Analysis Dashboard**: An interactive tool for filtering and visualizing complaint data, with an option to generate downloadable PDF reports.
+      * **RAG Chatbot**: A conversational interface for asking questions and receiving AI-generated answers with transparent, citable sources.
+
+-----
+
+## 🛠️ Tech Stack
+
+  - **Backend**: Python 3.10+, Pandas
+  - **Core RAG Libraries**: `sentence-transformers`, `faiss-cpu`, `transformers`, `langchain`
+  - **Evaluation**: `ragas`, `datasets`
+  - **Frontend**: `streamlit`
+  - **Key Models**:
+      - Embedding: `BAAI/bge-base-en-v1.5`
+      - Re-ranking: `cross-encoder/ms-marco-MiniLM-L-6-v2`
+      - Generation: `google/flan-t5-base`
+      - Sentiment: `distilbert-base-uncased-finetuned-sst-2-english`
+
+-----
+
+## 📁 Project Structure
 
 ```
-INTELLIGENT-COMPLAINT-ANALYSIS/
+rag_chatbot/
 │
 ├── data/
-│   ├── raw/                       # Raw CFPB data
-│   └── clean/
-│       ├── complaints_clean.csv  # Cleaned narratives
-│       └── vector_store/
-│           ├── index_300_50.faiss     # FAISS index of embeddings
-│           └── meta_300_50.csv        # Chunk metadata
+│   ├── raw/
+│   └── filtered_complaints.csv
+│   └── balanced_sampled_complaints.csv
+│   └── vector_store/
+│       ├── index_bge_base_300_20.faiss
+│       └── meta_bge_base_300_20.csv
 │
-├── notebooks/
-│   ├── task-1/
-│   │   ├── EDA_analysis.ipynb
-│   │   └── loading_filtering.ipynb
-│   ├── task-2/
-│   │   ├── chunking_eval.ipynb
-│   │   └── embedding_and_indexing.ipynb
-│   ├── task-3/
-│   │   └── rag_pipeline.ipynb
-│   └── task-4/
-│       └── (UI development notebook)
+├── evaluation/
+│   ├── evaluation_dataset.csv
+│   └── comprehensive_evaluation_results.csv
+│
+├── pages/
+│   ├── 2_💬_Chatbot.py
+│   └── 3_📈_Analysis_and_Report.py
 │
 ├── src/
-    ├── __init__.py
-│   ├── eda.py
-│   ├── filter_clean.py
-│   ├── chunking.py
-│   ├── langchain_chunking.py
-│   ├── embedding.py
-│   ├── embedding_indexing.py
-│   ├── vector_store.py
-│   ├── indexing.py
-│   └── rag_pipeline.py
+│   ├── preprocess_data.py
+│   ├── create_balanced_sample.py
+│   ├── rag_pipeline.py
+│   └── prompts.py
 │
-├── python/
-│   └── embaded_full.py           # Dev test script
-│
-├── requirements.txt              # Required Python packages
-├── LICENSE
+├── 1_🏠_Homepage.py             # Main Streamlit entry point
+├── config.yaml                  # Central configuration file
+├── run_indexing.py              # Script to build the FAISS index
+├── requirements.txt
 └── README.md
 ```
 
----
+-----
 
-## ⚙️ Key Components
+## 🚀 How to Run the Application
 
-### 1. 📊 Data Cleaning & EDA
-- Filtered for 5 key products.
-- Removed null and boilerplate entries.
-- Visualized word counts and complaint volume per product.
+1.  **Setup Environment**:
 
-### 2. ✂️ Chunking Strategy
-- Implemented using LangChain’s RecursiveCharacterTextSplitter.
-- Final config: `chunk_size=300`, `chunk_overlap=50` → balance between context and chunk granularity.
+    ```bash
+    # Clone the repository
+    git clone <your-repo-url>
+    cd rag_chatbot
 
-### 3. 🔍 Embedding & Vector Indexing
-- Embedding model: `sentence-transformers/all-MiniLM-L6-v2`
-- Vector store: FAISS with 384-d embeddings + metadata tracking.
+    # Create and activate a virtual environment
+    python -m venv venv
+    venv\Scripts\activate
 
-### 4. 🧠 RAG Pipeline
-- Retrieves top-k relevant complaint chunks for a query.
-- Feeds them into an LLM (`google/flan-t5-base`) to generate grounded answers.
-- Prompt tuned for contextual, non-hallucinated insights.
+    # Install dependencies
+    pip install -r requirements.txt
+    ```
 
----
-### 5. 🧠 Evaluation
-- Manually scored answers for ~10 representative questions using:
+2.  **Prepare Data and Build Index**:
 
-  - Retrieved chunks
+    ```bash
+    # (Optional) Run the preprocessing script if you have raw data
+    # python src/preprocess_data.py
 
-  - Generated answer
+    # (Optional) Create the balanced sample dataset
+    # python src/create_balanced_sample.py
 
-  - Score (1-5)
+    # Run the indexing script (this will take 1-2 hours on a CPU)
+    python -u run_indexing.py
+    ```
 
----
-### 6. UI: Streamlit App
-- Clean chat-style interface
+3.  **Launch the Streamlit App**:
 
-- Displays LLM response + supporting chunks
+    ```bash
+    streamlit run 1_🏠_Homepage.py
+    ```
 
-- Clear button resets session
+-----
 
----
-## Launch the App
-```bash
-cd streamlit_app
-streamlit run app.py
-```
+## 📊 Evaluation Results Example
 
-## 🧪 How to Run
+The comprehensive evaluation combines manual scores with automated RAGAs metrics.
 
-1. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
+| Question | Generated Answer | Manual Score (1-5) | RAGAs Faithfulness | RAGAs Answer Relevancy |
+| :--- | :--- | :---: | :---: | :---: |
+| What issues are reported with credit card disputes? | Users report issues primarily related to billing disputes and unauthorized or fraudulent charges on their accounts. | 5 | 1.00 | 0.98 |
+| Why do users complain about savings accounts? | Complaints often mention issues with fraud detection algorithms that lock accounts, and difficulties in accessing funds during investigations. | 4 | 1.00 | 0.95 |
 
-2. **Run Preprocessing & Indexing**
-   ```bash
-   python src/filter_clean.py
-   python src/embedding_indexing.py
-   ```
+-----
 
-3. **Test RAG Answering**
-   ```bash
-   python src/rag_pipeline.py
-   ```
+## 🔮 Future Work & Feature Plan
 
-4. *(Optional)* Launch interactive UI (Gradio/Streamlit coming in Task-4).
-
----
-
-## 💡 Sample Query
-
-> ❓ Why are customers unhappy with BNPL?  
-> 💬 “Many users complain about unexpected fees, poor transparency, and inability to manage installment schedules. The most common theme is dissatisfaction with the repayment process and unclear terms.”
-
----
-## 💡 Prompt Template Used
-
-```
-You are a financial analyst assistant for CrediTrust.
-Use the following retrieved complaint excerpts to answer the user's question.
-
-Context:
-{context}
-
-Question:
-{question}
-
-Answer:
-```
-
----
-
-## 📊 Evaluation Example
-
-| Question                             | Answer Summary                  | Retrieved Chunks | Score | Comments                      |
-|-------------------------------------|----------------------------------|------------------|-------|-------------------------------|
-| Why are users unhappy with BNPL?    | Mostly about hidden fees         | Chunk #12, #33   | 4/5   | Missed late repayment detail  |
-| What issues do credit card users face? | Billing disputes, fraud reports | Chunk #4, #19    | 5/5   | Fully captures pain points    |
-
----
-
-## 📸 Streamlit App Features
-
--  Chat interface for natural-language queries
-- LLM-generated answers with source chunks displayed
--  Clear button to reset interaction
-- (Optional) Token streaming for better UX
-
----
-
-## 🔮 Future Improvements
-
-- [ ] Filter answers by financial product
-- [ ] Add feedback loop for user ratings
-- [ ] Support larger LLMs (e.g., LLaMA3 or Mixtral)
-- [ ] Deploy on Hugging Face Spaces or Docker
-
----
-
-## 📚 References
-
-- [LangChain Docs](https://docs.langchain.com/)
-- [ChromaDB](https://docs.trychroma.com/getting-started)
-- [FAISS GitHub](https://github.com/facebookresearch/faiss/wiki/Getting-started)
-- [Streamlit Chat API](https://docs.streamlit.io/library/api-reference/chat)
-- [Gradio Docs](https://www.gradio.app/docs)
-- [HuggingFace RAG Guide](https://huggingface.co/blog/rag)
-
----
-
-## 📌 Tech Stack
-
-- Python 3.10+
-- SentenceTransformers (MiniLM-L6-v2)
-- FAISS
-- Hugging Face Transformers
-- LangChain
-- Pandas, NumPy, Matplotlib
-
----
-
-## 📈 Project Status
-
-- Task 1: Data cleaning, EDA complete
-- Task 2: Chunking, embedding, FAISS indexing done
-- Task 3: RAG pipeline and qualitative evaluation
-- Task 4: Interactive UI using streamlit
-
----
-
-## 📄 License
-
-This project is open-source and available under the [Apache License](LICENSE).
+  - [ ] **Complaint Severity Classification**: Implement a text-classification model to automatically tag complaints by urgency (e.g., `Critical`, `High`, `Medium`), allowing teams to prioritize responses.
+  - [ ] **Proactive Trend & Anomaly Detection**: Add a time-series analysis feature to the dashboard that automatically detects and highlights unusual spikes in complaint volume for specific products or issues.
+  - [ ] **Automated Topic Modeling**: Integrate a library like **BERTopic** to generate weekly or monthly reports that automatically discover and summarize hidden, recurring complaint themes.
