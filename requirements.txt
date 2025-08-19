@@ -1,19 +1,25 @@
-# Core ML and NLP libraries
-sentence-transformers==2.2.2
-transformers==4.39.3
+# Core Data Science & ML
+pandas
+numpy
+torch
+faiss-cpu
 
-# Vector database
-faiss-cpu==1.7.4
+# Hugging Face & RAG Libraries
+transformers
+sentence-transformers
+langchain
 
-# RAG framework
-langchain==0.1.14
+# Evaluation
+ragas
+datasets
 
-# Data handling
-pandas==2.2.1
-numpy==1.26.4
+# Application & UI
+streamlit
+python-docx
+fpdf2
 
-# Visualization
-matplotlib==3.8.4
-
-# Optional: progress bars
-tqdm==4.66.4
+# Utilities
+PyYAML
+psutil
+tqdm
+ipykernel

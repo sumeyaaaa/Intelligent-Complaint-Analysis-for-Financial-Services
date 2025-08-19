@@ -1,4 +1,4 @@
-# In your main script, e.g., rag_pipeline.py or a notebook
+# rag_pipeline.py 
 
 import faiss
 import pandas as pd
@@ -7,38 +7,17 @@ from sentence_transformers import SentenceTransformer
 from transformers import pipeline
 from typing import Dict, List, Tuple
 
-# --- Configuration for your OLD model and data ---
-# This dictionary replaces hardcoded paths and model names.
-config = {
-    "embedding": {
-        "model_name": "sentence-transformers/all-MiniLM-L6-v2"
-    },
-    "llm": {
-        "model_name": "google/flan-t5-base",
-        "max_new_tokens": 256
-    },
-    "retrieval": {
-        "k": 5 # Number of chunks to retrieve
-    },
-    "prompt": {
-        "template": (
-            "You are a financial analyst assistant. "
-            "Use ONLY the following complaint excerpts to answer the question. "
-            "If the answer is not in the context, say you don't have enough information.\n\n"
-            "Context:\n{context}\n\nQuestion: {question}\nAnswer:"
-        )
-    },
-    "output": {
-        "index_path": "data/vector_store/index_300_50.faiss",
-        "meta_path": "data/vector_store/meta_300_50.csv"
-    }
-}
+
+# rag_pipeline.py
+
+import faiss
+import pandas as pd
+import numpy as np
+from sentence_transformers import SentenceTransformer
+from transformers import pipeline
+from typing import Dict, List, Tuple
 
 class RAGPipeline:
-    """
-    A refactored RAG pipeline that is driven by a configuration dictionary.
-    This version performs direct FAISS retrieval without a re-ranker.
-    """
     def __init__(self, config: Dict):
         self.config = config
         
@@ -49,6 +28,8 @@ class RAGPipeline:
         
         # Load FAISS index and metadata from config
         print("Loading FAISS index and metadata...")
+        
+        # Use the correct key: 'output'
         self.index = faiss.read_index(self.config['output']['index_path'])
         self.metadata = pd.read_csv(self.config['output']['meta_path'])
         
@@ -59,7 +40,7 @@ class RAGPipeline:
 
         # Load prompt template from config
         self.prompt_template = self.config['prompt']['template']
-
+        
     def query(self, question: str) -> Tuple[str, List[Dict]]:
         """
         Executes the RAG pipeline: embed, retrieve, and generate.
@@ -94,5 +75,5 @@ class RAGPipeline:
         
         return response, top_chunks
 
-# --- Example of how to use the class ---
+
 
